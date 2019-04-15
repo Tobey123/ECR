@@ -5,7 +5,7 @@
 status_info* status_info_new() {
   status_info *info = (status_info*)malloc(sizeof(status_info));
   
-  info->code = OK;
+  info->code = REDIS_OK;
   info->message = "";
   
   return info;

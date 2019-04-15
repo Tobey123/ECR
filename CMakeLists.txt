@@ -4,6 +4,8 @@ set(CMAKE_BUILD_TYPE Debug)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/lib)
+include_directories(${ZMQ_INCLUDE_DIRS})
+include_directories(${CZMQ_INCLUDE_DIRS})
 
 message(${CMAKE_BINARY_DIR})
 

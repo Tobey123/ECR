@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 
   status_info *redis_info = initRedis("localhost", 6379, false);
 
-  if (redis_info->code == OK) {
+  if (redis_info->code == REDIS_OK) {
     ecr_job *job = ecr_job_new();
     job->command = "uname -a";
     job->description = "get host operating system";
@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     status_info *status = storeJob("3", job);
     ecr_job_destroy(&job);
 
-    if (status->code == OK) {
+    if (status->code == REDIS_OK) {
       ecr_job *job = retrieveJob("3");
       printf("got job: %s\n", job->description);
       ecr_job_destroy(&job);
