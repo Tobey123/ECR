@@ -12,7 +12,15 @@ DEPS := $(OBJS:.o=.d)
 INC_DIRS := $(shell find $(SRC_DIRS) -type d)
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
+DEBUG_CPPFLAGS = -g3
+
 CPPFLAGS ?= -Wall -Werror -pedantic $(INC_FLAGS) -MMD -MP
+
+ifeq "$(DEBUG)" ""
+CPPFLAGS += -O2 
+else
+CFLAGS += $(DEBUG_CPPFLAGS)
+endif
 
 $(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 	$(CC) $(OBJS) -o $@ $(LDFLAGS)
@@ -41,3 +49,4 @@ clean:
 -include $(DEPS)
 
 MKDIR_P ?= mkdir -p
+
