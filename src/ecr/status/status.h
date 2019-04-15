@@ -2,7 +2,7 @@
 #define __ECR_STATUS__
 
 enum redis_return_value {
-  REDIS_OK, 
+  REDIS_SUCCESS, 
   REDIS_ERROR,
   REDIS_FAILED,
   REDIS_UNKNOWN
