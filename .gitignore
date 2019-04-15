@@ -54,3 +54,4 @@ dkms.conf
 # local dirs
 .DS_Store
 build/
+*/build/
