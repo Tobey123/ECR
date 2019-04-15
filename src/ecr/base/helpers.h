@@ -1,4 +1,4 @@
-#ifdef __ECR_HELPERS__
+#ifndef __ECR_HELPERS__
 #define __ECR_HELPERS__
 
 #include <string.h>
