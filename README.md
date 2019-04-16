@@ -16,15 +16,26 @@ The underlying tech is based on [ØMQ](http://zeromq.org/), [Redis](https://redi
 
 This project uses [CMake](https://cmake.org/download/) so you will have to install it first.
 
-Create a `build` folder and enter it `mkdir build && cd build`.
+Create a `build` folder and enter it: `mkdir build && cd build`.
 
 Then let CMake generate Makefiles: `cmake ..`
 
-Build the binaries with a simple `make` call.
+Build the binaries: `make`.
 
 For verbose output use `make VERBOSE=1`.
 
-For quick testing of available functions use the binary based on `ecrprog.c` which is located in `build/bin`.
+For a simple showcase of available functions use the binary based on `ecrprog.c` which is located in `build/bin`.
+
+### Testing
+
+Tests are based on [Criterion Testing Framework](https://github.com/Snaipe/Criterion)
+
+Enter directory `test` and compile the suite with `clang -o test_ecr_all test_ecr_all.c -lcriterion -lhiredis` (*applies to GCC as well*)
+
+```shell
+$ ./test_ecr_all 
+[====] Synthesis: Tested: 13 | Passing: 13 | Failing: 0 | Crashing: 0 
+```
 
 # LICENSE
 
