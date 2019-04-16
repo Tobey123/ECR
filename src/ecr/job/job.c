@@ -5,6 +5,11 @@
 #include "../base/helpers.h"
 #include "job.h"
 
+/**
+ * @brief  Creates a new job instance
+ * @note   
+ * @retval Reference to job instance
+ */
 ecr_job* ecr_job_new() {
   ecr_job *job = (ecr_job*)malloc(sizeof(ecr_job));
   assert(job);
@@ -17,7 +22,12 @@ ecr_job* ecr_job_new() {
 
   return job;
 }
-
+/**
+ * @brief  Destroys a job instance
+ * @note   
+ * @param  **job: reference to job reference
+ * @retval None
+ */
 void ecr_job_destroy(ecr_job **job) {
   assert(job);
   if (*job) {
@@ -26,7 +36,12 @@ void ecr_job_destroy(ecr_job **job) {
     *job = NULL;
   }
 }
-
+/**
+ * @brief  Initializes a job by parsing it from JSON
+ * @note   
+ * @param  *data: JSON data
+ * @retval reference to job instance
+ */
 ecr_job* ecr_job_parse(char *data) {
   assert(data);
   cJSON *json = cJSON_Parse(data);
@@ -42,7 +57,12 @@ ecr_job* ecr_job_parse(char *data) {
   cJSON_Delete(json);
   return job;
 }
-
+/**
+ * @brief  Returns JSON description of a job
+ * @note   
+ * @param  *job: reference to job that should be returned as JSON
+ * @retval cJSON instance containing JSON data
+ */
 cJSON* ecr_job_tojson(ecr_job *job) {
   assert(job);
   cJSON *json = cJSON_CreateObject();
@@ -62,7 +82,12 @@ cJSON* ecr_job_tojson(ecr_job *job) {
 
   return json;
 }
-
+/**
+ * @brief  Parses a job instance into a raw string
+ * @note   
+ * @param  *job: reference to job that should be parsed into raw string
+ * @retval raw string containing job data
+ */
 char* ecr_job_tostring(ecr_job *job) {
   cJSON *json = ecr_job_tojson(job);
   char *as_string = strdup(cJSON_Print(json));

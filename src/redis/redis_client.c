@@ -12,7 +12,53 @@
 struct timeval timeout = { 1, 500000 }; // 1.5 seconds
 redisContext *ctx; // global & private
 
-status_info* initRedis(char *hostname, int port, bool is_unix) {
+status_info* prv_connect(char *hostname, int port, bool is_unix);
+status_info* prv_disconnect();
+status_info* prv_store_job(ecr_job *job);
+ecr_job* prv_retrieve_job(char *key);
+status_info* prv_remove_job(char *key);
+ecr_job* prv_create_job(char *id, char *description, char *source_code, char *command, bool has_source_code);
+
+/**
+ * @brief  Initializes a redis client
+ * @note   
+ * @retval reference to redis_client struct
+ */
+redis_client* redis_client_new() {
+  redis_client *client = (redis_client*)malloc(sizeof(redis_client));
+  assert(client);
+  client->connect = prv_connect;
+  client->disconnect = prv_disconnect;
+  client->create_job = prv_create_job;
+  client->remove_job = prv_remove_job;
+  client->retrieve_job = prv_retrieve_job;
+  client->store_job = prv_store_job;
+  return client;
+}
+/**
+ * @brief  Destroys a redis client
+ * @note   
+ * @param  **client: 
+ * @retval None
+ */
+void redis_client_destroy(redis_client **client) {
+  assert(client);
+  if (*client) {
+    redis_client *self = *client;
+    free (self);
+    *client = NULL;
+  }
+}
+/**
+ * @brief  Opens a connection to a redis instance
+ * @note   
+ * @param  *hostname: Server where redis is running
+ * @param  port: Server port
+ * @param  is_unix: Is client OS a Unix system
+ * @retval status_info reference containing return code
+ */
+status_info* prv_connect(char *hostname, int port, bool is_unix) {
+  assert(!ctx);
   status_info *status = status_info_new();
   assert(status);
 
@@ -36,39 +82,49 @@ status_info* initRedis(char *hostname, int port, bool is_unix) {
     status->message = "SUCCESS";
     return status;
 }
-
-status_info* deinitRedis() {
-  status_info *info = status_info_new();
+/**
+ * @brief  Disconnects from redis server
+ * @note   
+ * @retval status_info reference containing return code
+ */
+status_info* prv_disconnect() {
   assert(ctx);
+  status_info *info = status_info_new();
   redisFree(ctx);
   info->code = REDIS_STATUS_SUCCESS;
   info->message = "Connection to redis closed";
   return info;
 }
-
-status_info* storeJob(char *key, ecr_job *job) {
-    assert(key);
+/**
+ * @brief  Stores a job in redis db
+ * @note   
+ * @param  *job: reference to job
+ * @retval status_info reference containing return code
+ */
+status_info* prv_store_job(ecr_job *job) {
+    assert(ctx);
     assert(job);
     char *job_string = ecr_job_tostring(job);
     status_info *info = status_info_new();
-    assert(ctx);
 
-    redisReply *reply = redisCommand(ctx, "SET %s:%b %b", ECR_REDIS_JOB_PREFIX, key, strlen(key), job_string, strlen(job_string));
+    redisReply *reply = redisCommand(ctx, "SET %s:%b %b", ECR_REDIS_JOB_PREFIX, job->id, strlen(job->id), job_string, strlen(job_string));
     assert(reply);
 
     info->code = REDIS_STATUS_SUCCESS;
     info->message = strdup(reply->str);
-
-    info->code = REDIS_STATUS_SUCCESS;
     freeReplyObject(reply);
-
     return info;
 }
-
-ecr_job* retrieveJob(char *key) {
+/**
+ * @brief  Retrieves a job from redis db
+ * @note   
+ * @param  *key: job id
+ * @retval reference to job instance 
+ */
+ecr_job* prv_retrieve_job(char *key) {
+  assert(ctx);
   assert(key);
   ecr_job *job = ecr_job_new();
-  assert(ctx);
 
   redisReply *reply = redisCommand(ctx, "GET %s:%s", ECR_REDIS_JOB_PREFIX, key);
   assert(reply);
@@ -86,18 +142,37 @@ ecr_job* retrieveJob(char *key) {
   cJSON_Delete(json);
   return job;
 }
-
-status_info* removeJob(char *key) {
+/**
+ * @brief  Removes a job from redis db
+ * @note   
+ * @param  *key: job id
+ * @retval status_info reference containing return code
+ */
+status_info* prv_remove_job(char *key) {
+  assert(ctx);
+  assert(key);
   status_info *info = status_info_new();
   assert(info);
 
+  redisReply *reply = redisCommand(ctx, "DEL %s:%s", ECR_REDIS_JOB_PREFIX, key);
+  assert(reply);
+
   info->code = REDIS_STATUS_SUCCESS;
-  info->message = "job data here";
+  info->message = strdup(reply->str);
 
   return info;
 }
-
-ecr_job* createJob(char *id, char *description, char *source_code, char *command, bool has_source_code) {
+/**
+ * @brief  Creates a new job
+ * @note   
+ * @param  *id: job id
+ * @param  *description: job description 
+ * @param  *source_code: source code
+ * @param  *command: command -> will be ignored if has_source_code is true
+ * @param  has_source_code: does this job carry source_code
+ * @retval reference to job instance
+ */
+ecr_job* prv_create_job(char *id, char *description, char *source_code, char *command, bool has_source_code) {
   assert(id);
   assert(description);
   assert(source_code);

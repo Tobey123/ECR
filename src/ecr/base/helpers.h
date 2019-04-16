@@ -2,7 +2,12 @@
 #define __ECR_HELPERS__
 
 #include <string.h>
-
+/**
+ * @brief  Duplicate strinc
+ * @note   
+ * @param  *str: string to be duplicated
+ * @retval duplicated string
+ */
 char *strdup(const char *str)
 {
   size_t len;
