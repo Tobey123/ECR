@@ -7,7 +7,7 @@
 
 typedef status_info* (*_connect)(char *hostname, int port, bool is_unix);
 typedef status_info* (*_disconnect)();
-typedef ecr_job* (*_create_job)(char *id, char *description, char *source_code, char *command, bool has_source_code);
+typedef ecr_job* (*_create_job)(const char *id, const char *description, const char *data, const bool is_command);
 typedef status_info* (*_store_job)(ecr_job *job);
 typedef ecr_job* (*_retrieve_job)(char *key);
 typedef status_info* (*_remove_job)(char *key);

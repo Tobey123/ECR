@@ -8,9 +8,8 @@
 typedef struct _ecr_job {
   char *id;
   char *description;
-  char *source_code;
-  char *command;
-  bool has_source_code;
+  char *data;
+  bool is_command;
 } ecr_job;
 
 ecr_job* ecr_job_new();

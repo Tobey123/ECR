@@ -17,7 +17,7 @@ status_info* prv_disconnect();
 status_info* prv_store_job(ecr_job *job);
 ecr_job* prv_retrieve_job(char *key);
 status_info* prv_remove_job(char *key);
-ecr_job* prv_create_job(char *id, char *description, char *source_code, char *command, bool has_source_code);
+ecr_job* prv_create_job(const char *id, const char *description, const char *data, const bool is_command);
 
 /**
  * @brief  Initializes a redis client
@@ -134,9 +134,8 @@ ecr_job* prv_retrieve_job(char *key) {
 
   job->id = strdup(cJSON_GetObjectItemCaseSensitive(json, "id")->valuestring);
   job->description = strdup(cJSON_GetObjectItemCaseSensitive(json, "description")->valuestring);
-  job->command = strdup(cJSON_GetObjectItemCaseSensitive(json, "command")->valuestring);
-  job->source_code = strdup(cJSON_GetObjectItemCaseSensitive(json, "source_code")->valuestring);
-  job->has_source_code = cJSON_GetObjectItemCaseSensitive(json, "has_source_code")->valueint;
+  job->data = strdup(cJSON_GetObjectItemCaseSensitive(json, "data")->valuestring);
+  job->is_command = cJSON_GetObjectItemCaseSensitive(json, "is_command")->valueint;
 
   freeReplyObject(reply);
   cJSON_Delete(json);
@@ -167,24 +166,21 @@ status_info* prv_remove_job(char *key) {
  * @note   
  * @param  *id: job id
  * @param  *description: job description 
- * @param  *source_code: source code
- * @param  *command: command -> will be ignored if has_source_code is true
- * @param  has_source_code: does this job carry source_code
+ * @param  *data: a single command or source code
+ * @param  is_command: does this job carry source code
  * @retval reference to job instance
  */
-ecr_job* prv_create_job(char *id, char *description, char *source_code, char *command, bool has_source_code) {
+ecr_job* prv_create_job(const char *id, const char *description, const char *data, const bool is_command) {
   assert(id);
   assert(description);
-  assert(source_code);
-  assert(command);
+  assert(data);
   ecr_job *job = ecr_job_new();
   assert(job);
 
   job->id = strdup(id);
   job->description = strdup(description);
-  job->source_code = strdup(source_code);
-  job->command = strdup(command);
-  job->has_source_code = has_source_code;
+  job->data = strdup(data);
+  job->is_command = is_command;
 
   return job;
 }
