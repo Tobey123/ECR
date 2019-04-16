@@ -14,7 +14,7 @@ typedef struct _ecr_job {
 
 ecr_job* ecr_job_new();
 void ecr_job_destroy(ecr_job **job);
-ecr_job* ecr_job_parse(char *data);
+ecr_job* ecr_job_parse(char *job_str);
 cJSON* ecr_job_tojson(ecr_job *job);
 char* ecr_job_tostring(ecr_job *job);
 

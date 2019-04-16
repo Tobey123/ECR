@@ -53,8 +53,8 @@ ecr_job* ecr_job_parse(char *job_str) {
   cJSON *job_data = cJSON_GetObjectItem(job_json, "data");
 
   job->data->content = strdup(cJSON_GetObjectItemCaseSensitive(job_data, "content")->valuestring);
-  job->data->is_command = cJSON_GetObjectItemCaseSensitive(job_data, "is_command")->valueint;
-  job->data->lang = (language)cJSON_GetObjectItemCaseSensitive(job_data, "lang")->valueint;
+  job->data->is_command = (bool)(cJSON_GetObjectItemCaseSensitive(job_data, "is_command")->valueint);
+  job->data->lang = (language)(cJSON_GetObjectItemCaseSensitive(job_data, "lang")->valueint);
   
 
   cJSON_Delete(job_json);
@@ -75,14 +75,7 @@ cJSON* ecr_job_tojson(ecr_job *job) {
   cJSON *id = cJSON_CreateString(strdup(job->id));
   cJSON *description = cJSON_CreateString(strdup(job->description));
 
-  cJSON *job_data = cJSON_CreateObject();
-  cJSON *content = cJSON_CreateString(strdup(job->data->content));
-  cJSON *is_command = cJSON_CreateBool(job->data->is_command);
-  cJSON *lang = cJSON_CreateNumber(job->data->lang);
-
-  cJSON_AddItemToObject(job_data, "content", content);
-  cJSON_AddItemToObject(job_data, "is_command", is_command);
-  cJSON_AddItemToObject(job_data, "lang", lang);
+  cJSON *job_data = ecr_job_data_tojson(job->data);
 
   cJSON_AddItemToObject(json, "id", id);
   cJSON_AddItemToObject(json, "description", description);
