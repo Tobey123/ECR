@@ -5,8 +5,6 @@
 #include "../ecr/job/job.h"
 #include "../ecr/status/status.h"
 
-status_info* get_default_status_info();
-ecr_job* get_default_job_info();
 status_info* initRedis(char *hostname, int port, bool is_unix);
 status_info* deinitRedis();
 ecr_job* createJob(char *id, char *description, char *source_code, char *command, bool has_source_code);
