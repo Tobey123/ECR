@@ -2,14 +2,14 @@
 #define __ECR_JOB__
 
 #include "../../cJSON/cJSON.h"
+#include "job_data.h"
 
 #define ECR_REDIS_JOB_PREFIX "ecr:job"
 
 typedef struct _ecr_job {
   char *id;
   char *description;
-  char *data;
-  bool is_command;
+  ecr_job_data *data;
 } ecr_job;
 
 ecr_job* ecr_job_new();

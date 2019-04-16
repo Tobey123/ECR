@@ -14,10 +14,9 @@ ecr_job* ecr_job_new() {
   ecr_job *job = (ecr_job*)malloc(sizeof(ecr_job));
   assert(job);
 
-  job->id = "00";
+  job->id = "";
   job->description = "";
-  job->data = "";
-  job->is_command = true;
+  job->data = (ecr_job_data*)malloc(sizeof(ecr_job_data));
 
   return job;
 }
@@ -38,21 +37,28 @@ void ecr_job_destroy(ecr_job **job) {
 /**
  * @brief  Initializes a job by parsing it from JSON
  * @note   
- * @param  *data: JSON data
+ * @param  *job_str: JSON data
  * @retval reference to job instance
  */
-ecr_job* ecr_job_parse(char *data) {
-  assert(data);
-  cJSON *json = cJSON_Parse(data);
-  assert(json);
+ecr_job* ecr_job_parse(char *job_str) {
+  assert(job_str);
+  cJSON *job_json = cJSON_Parse(job_str);
+  assert(job_json);
 
   ecr_job *job = ecr_job_new();
-  job->id = strdup(cJSON_GetObjectItemCaseSensitive(json, "id")->valuestring);
-  job->description = strdup(cJSON_GetObjectItemCaseSensitive(json, "description")->valuestring);
-  job->data = strdup(cJSON_GetObjectItemCaseSensitive(json, "data")->valuestring);
-  job->is_command = cJSON_GetObjectItemCaseSensitive(json, "is_command")->valueint;
+  job->id = strdup(cJSON_GetObjectItemCaseSensitive(job_json, "id")->valuestring);
+  job->description = strdup(cJSON_GetObjectItemCaseSensitive(job_json, "description")->valuestring);
+  // job->data = strdup(cJSON_GetObjectItemCaseSensitive(json, "data")->valuestring);
 
-  cJSON_Delete(json);
+  cJSON *job_data = cJSON_GetObjectItem(job_json, "data");
+
+  job->data->content = strdup(cJSON_GetObjectItemCaseSensitive(job_data, "content")->valuestring);
+  job->data->is_command = cJSON_GetObjectItemCaseSensitive(job_data, "is_command")->valueint;
+  job->data->lang = (language)cJSON_GetObjectItemCaseSensitive(job_data, "lang")->valueint;
+  
+
+  cJSON_Delete(job_json);
+  cJSON_Delete(job_data);
   return job;
 }
 /**
@@ -68,13 +74,19 @@ cJSON* ecr_job_tojson(ecr_job *job) {
 
   cJSON *id = cJSON_CreateString(strdup(job->id));
   cJSON *description = cJSON_CreateString(strdup(job->description));
-  cJSON *data = cJSON_CreateString(strdup(job->data));
-  cJSON *is_command = cJSON_CreateBool(job->is_command);
+
+  cJSON *job_data = cJSON_CreateObject();
+  cJSON *content = cJSON_CreateString(strdup(job->data->content));
+  cJSON *is_command = cJSON_CreateBool(job->data->is_command);
+  cJSON *lang = cJSON_CreateNumber(job->data->lang);
+
+  cJSON_AddItemToObject(job_data, "content", content);
+  cJSON_AddItemToObject(job_data, "is_command", is_command);
+  cJSON_AddItemToObject(job_data, "lang", lang);
 
   cJSON_AddItemToObject(json, "id", id);
   cJSON_AddItemToObject(json, "description", description);
-  cJSON_AddItemToObject(json, "data", data);
-  cJSON_AddItemToObject(json, "is_command", is_command);
+  cJSON_AddItemToObject(json, "data", job_data);
 
   return json;
 }
@@ -90,4 +102,3 @@ char* ecr_job_tostring(ecr_job *job) {
   free(json);
   return as_string;
 }
-
