@@ -35,5 +35,6 @@ int main(int argc, char **argv) {
     printf("REDIS ERROR: %s\n", redis_info->message);
   }
   status_info_destroy(&redis_info);
+  deinitRedis();
   return 0;
 }
