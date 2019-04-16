@@ -57,16 +57,14 @@ Test(destroys_job_object, passing) {
 
 Test(job_properties_are_accessible, passing) {
     ecr_job *job = ecr_job_new();
-    job->command = "command";
+    job->data = "print()";
     job->description = "description";
-    job->has_source_code = true;
+    job->is_command = true;
     job->id = "1";
-    job->source_code = "print()";
-    cr_assert_str_eq(job->command, "command");
+    cr_assert_str_eq(job->data, "print()");
     cr_assert_str_eq(job->description, "description");
-    cr_assert_eq(job->has_source_code, true);
+    cr_assert_eq(job->is_command, true);
     cr_assert_str_eq(job->id, "1");
-    cr_assert_str_eq(job->source_code, "print()");
     ecr_job_destroy(&job);
 }
 
@@ -117,13 +115,13 @@ void teardown_redis(void) {
 }
 
 Test(create_job, passing, .init = setup_redis, .fini = teardown_redis) {
-    ecr_job *job = client->create_job("123", "description", "", "print()", false);
+    ecr_job *job = client->create_job("123", "description", "print()", true);
     cr_assert(job);
     ecr_job_destroy(&job);
 }
 
 Test(remove_job, passing, .init = setup_redis, .fini = teardown_redis) {
-    ecr_job *job = client->create_job("123", "description", "", "print()", false);
+    ecr_job *job = client->create_job("123", "description", "print()", true);
     status_info *job_status = client->store_job(job);
     cr_assert_eq(job_status->code, REDIS_STATUS_SUCCESS);
     status_info *removal_status = client->remove_job(strdup(job->id));
@@ -133,7 +131,7 @@ Test(remove_job, passing, .init = setup_redis, .fini = teardown_redis) {
 }
 
 Test(store_job, passing, .init = setup_redis, .fini = teardown_redis) {
-    ecr_job *job = client->create_job("123", "description", "", "print()", false);
+    ecr_job *job = client->create_job("123", "description", "print()", true);
     status_info *job_status = client->store_job(job);
     cr_assert_eq(job_status->code, REDIS_STATUS_SUCCESS);
     client->remove_job(strdup(job->id));
