@@ -22,7 +22,8 @@ int main(int argc, char **argv) {
   status_info *redis_info = client->connect("localhost", 6379, false);
 
   if (redis_info->code == REDIS_STATUS_SUCCESS) {
-    ecr_job *job = client->create_job("123", "get host operating system", "uname -a", true);
+    ecr_job_data *job_data = client->create_job_data("print()", true, LANG_UNKNOWN);
+    ecr_job *job = client->create_job("123", "get host operating system", job_data, true);
     assert(job);
     status_info *status = client->store_job(job);
     ecr_job_destroy(&job);
