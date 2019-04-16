@@ -7,10 +7,12 @@
 #include "../src/cJSON/cJSON.h"
 #include "../src/ecr/status/status.h"
 #include "../src/ecr/job/job.h"
+#include "../src/ecr/job/job_data.h"
 #include "../src/redis/redis_client.h"
 
 #include "../src/cJSON/cJSON.c"
 #include "../src/ecr/status/status.c"
+#include "../src/ecr/job/job_data.c"
 #include "../src/ecr/job/job.c"
 #include "../src/redis/redis_client.c"
 
@@ -57,14 +59,15 @@ Test(destroys_job_object, passing) {
 
 Test(job_properties_are_accessible, passing) {
     ecr_job *job = ecr_job_new();
-    job->data = "print()";
-    job->description = "description";
-    job->is_command = true;
     job->id = "1";
-    cr_assert_str_eq(job->data, "print()");
-    cr_assert_str_eq(job->description, "description");
-    cr_assert_eq(job->is_command, true);
+    job->description = "description";
+    job->data->content = "print()";
+    job->data->is_command = true;
+    job->data->lang = LANG_UNKNOWN;
     cr_assert_str_eq(job->id, "1");
+    cr_assert_str_eq(job->description, "description");
+    cr_assert_str_eq(job->data->content, "print()");
+    cr_assert_eq(job->data->is_command, true);
     ecr_job_destroy(&job);
 }
 
@@ -115,13 +118,16 @@ void teardown_redis(void) {
 }
 
 Test(create_job, passing, .init = setup_redis, .fini = teardown_redis) {
-    ecr_job *job = client->create_job("123", "description", "print()", true);
+    ecr_job_data *job_data = client->create_job_data("print()", true, LANG_UNKNOWN);
+    ecr_job *job = client->create_job("123", "description", job_data, true);
     cr_assert(job);
     ecr_job_destroy(&job);
+    ecr_job_data_destroy(&job_data);
 }
 
 Test(remove_job, passing, .init = setup_redis, .fini = teardown_redis) {
-    ecr_job *job = client->create_job("123", "description", "print()", true);
+    ecr_job_data *job_data = client->create_job_data("print()", true, LANG_UNKNOWN);
+    ecr_job *job = client->create_job("123", "description", job_data, true);
     status_info *job_status = client->store_job(job);
     cr_assert_eq(job_status->code, REDIS_STATUS_SUCCESS);
     status_info *removal_status = client->remove_job(strdup(job->id));
@@ -131,7 +137,8 @@ Test(remove_job, passing, .init = setup_redis, .fini = teardown_redis) {
 }
 
 Test(store_job, passing, .init = setup_redis, .fini = teardown_redis) {
-    ecr_job *job = client->create_job("123", "description", "print()", true);
+    ecr_job_data *job_data = client->create_job_data("print()", true, LANG_UNKNOWN);
+    ecr_job *job = client->create_job("123", "description", job_data, true);
     status_info *job_status = client->store_job(job);
     cr_assert_eq(job_status->code, REDIS_STATUS_SUCCESS);
     client->remove_job(strdup(job->id));
