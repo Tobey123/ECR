@@ -2,10 +2,10 @@
 #define __ECR_STATUS__
 
 enum redis_return_value {
-  REDIS_SUCCESS, 
-  REDIS_ERROR,
-  REDIS_FAILED,
-  REDIS_UNKNOWN
+  REDIS_STATUS_SUCCESS, 
+  REDIS_STATUS_ERROR,
+  REDIS_STATUS_FAILED,
+  REDIS_STATUS_UNKNOWN
 };
 
 typedef enum redis_return_value redis_status_code;
