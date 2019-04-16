@@ -8,7 +8,7 @@
 /**
  * @brief  Creates a new job instance
  * @note   
- * @retval Reference to job instance
+ * @retval Pointer to job instance
  */
 ecr_job* ecr_job_new() {
   ecr_job *job = (ecr_job*)malloc(sizeof(ecr_job));
@@ -23,7 +23,7 @@ ecr_job* ecr_job_new() {
 /**
  * @brief  Destroys a job instance
  * @note   
- * @param  **job: reference to job reference
+ * @param  **job: Pointer to job pointer
  * @retval None
  */
 void ecr_job_destroy(ecr_job **job) {
@@ -38,7 +38,7 @@ void ecr_job_destroy(ecr_job **job) {
  * @brief  Initializes a job by parsing it from JSON
  * @note   
  * @param  *job_str: JSON data
- * @retval reference to job instance
+ * @retval Pointer to job instance
  */
 ecr_job* ecr_job_parse(char *job_str) {
   assert(job_str);
@@ -65,7 +65,7 @@ ecr_job* ecr_job_parse(char *job_str) {
  * @brief  Returns JSON description of a job
  * @note   
  * @param  *job: reference to job that should be returned as JSON
- * @retval cJSON instance containing JSON data
+ * @retval cJSON pointer
  */
 cJSON* ecr_job_tojson(ecr_job *job) {
   assert(job);

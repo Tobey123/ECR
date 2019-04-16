@@ -5,6 +5,11 @@
 #include "../base/helpers.h"
 #include "job_data.h"
 
+/**
+ * @brief  Creates a new job_data instance
+ * @note   
+ * @retval Pointer to job_data instance
+ */
 ecr_job_data* ecr_job_data_new() {
   ecr_job_data *job_data = (ecr_job_data*)malloc(sizeof(ecr_job_data));
   assert(job_data);
@@ -13,7 +18,12 @@ ecr_job_data* ecr_job_data_new() {
   job_data->lang = LANG_UNKNOWN;
   return job_data;
 }
-
+/**
+ * @brief  Destroys a job_data instance
+ * @note   
+ * @param  **job_data: Pointer to pointer of job_data instance
+ * @retval None
+ */
 void ecr_job_data_destroy(ecr_job_data **job_data) {
   assert(job_data);
   if (*job_data) {
@@ -22,7 +32,12 @@ void ecr_job_data_destroy(ecr_job_data **job_data) {
     *job_data = NULL;
   }
 }
-
+/**
+ * @brief  Parses JSON string into job_data instance
+ * @note   
+ * @param  *job_data_str: Pointer to JSON string
+ * @retval 
+ */
 ecr_job_data* ecr_job_data_parse(char *job_data_str) {
   assert(job_data_str);
   cJSON *job_data_json = cJSON_Parse(job_data_str);
@@ -36,7 +51,12 @@ ecr_job_data* ecr_job_data_parse(char *job_data_str) {
   cJSON_Delete(job_data_json);
   return job_data;
 }
-
+/**
+ * @brief  Parses job_data instance into JSON string
+ * @note   
+ * @param  *job_data: Pointer to job_data instance
+ * @retval 
+ */
 cJSON* ecr_job_data_tojson(ecr_job_data *job_data) {
   assert(job_data);
   cJSON *job_data_json = cJSON_CreateObject();
@@ -52,6 +72,12 @@ cJSON* ecr_job_data_tojson(ecr_job_data *job_data) {
 
   return job_data_json;
 }
+/**
+ * @brief  Parses job_data instance into string
+ * @note   
+ * @param  *job_data: Pointer to job_data instance
+ * @retval 
+ */
 char* ecr_job_data_tostring(ecr_job_data *job_data) {
   cJSON *json = ecr_job_data_tojson(job_data);
   char *as_string = strdup(cJSON_Print(json));
