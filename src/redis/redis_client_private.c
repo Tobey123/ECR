@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <hiredis/hiredis.h>
+#include "../ecr/base/base.h"
 #include "redis_client_private.h"
 
 static struct timeval timeout = { 1, 500000 }; // 1.5 seconds
@@ -83,7 +84,7 @@ status_info* prv_store_job(ecr_job *job) {
 
     info->code = REDIS_STATUS_SUCCESS;
     if (reply->len) {
-      info->message = strndup(reply->str, strlen(reply->str));
+      info->message = ecr_strdup(reply->str);
     }
     freeReplyObject(reply);
     return info;
@@ -104,23 +105,17 @@ ecr_job* prv_retrieve_job(char *key) {
   cJSON *job_json = cJSON_Parse(reply->str);
   assert(job_json);
 
-  char *_id = cJSON_GetObjectItemCaseSensitive(job_json, "id")->valuestring;
-  char *_description = cJSON_GetObjectItemCaseSensitive(job_json, "description")->valuestring;
-
-  char *id = strndup(_id, strlen(_id));
-  char *description = strndup(_description, strlen(_description));
-
   cJSON *job_data_json = cJSON_GetObjectItem(job_json, "data");
 
-  char *_data = cJSON_GetObjectItemCaseSensitive(job_data_json, "content")->valuestring;
-  char *data = strndup(_data, strlen(data));
-
-  ecr_job_data *job_data = ecr_job_data_new(data,
+  ecr_job_data *job_data = ecr_job_data_new(ecr_strdup(cJSON_GetObjectItemCaseSensitive(job_data_json, "content")->valuestring),
                    (bool)cJSON_GetObjectItemCaseSensitive(job_data_json, "is_command")->valueint,
                    (language)cJSON_GetObjectItemCaseSensitive(job_data_json, "lang")->valueint
   );
 
-  ecr_job *job = ecr_job_new(id, description, job_data);
+  ecr_job *job = ecr_job_new(ecr_strdup(cJSON_GetObjectItemCaseSensitive(job_json, "id")->valuestring), 
+                            ecr_strdup(cJSON_GetObjectItemCaseSensitive(job_json, "description")->valuestring),
+                            job_data
+  );
 
 
   freeReplyObject(reply);
@@ -144,7 +139,7 @@ status_info* prv_remove_job(char *key) {
 
   info->code = REDIS_STATUS_SUCCESS;
   if (reply->len) {
-    info->message = strndup(reply->str, strlen(reply->str));
+    info->message = ecr_strdup(reply->str);
   }
 
   return info;
@@ -161,8 +156,8 @@ ecr_job* prv_create_job(char *id, char *description, ecr_job_data *data) {
   assert(id);
   assert(description);
   assert(data);
-  ecr_job *job = ecr_job_new(strndup(id, strlen(id)),
-                            strndup(description, strlen(description)),
+  ecr_job *job = ecr_job_new(ecr_strdup(id),
+                            ecr_strdup(description),
                             data
   );
   return job;
@@ -177,6 +172,6 @@ ecr_job* prv_create_job(char *id, char *description, ecr_job_data *data) {
  */
 ecr_job_data* prv_create_job_data(char *content, bool is_command, language lang) {
   assert(content);
-  ecr_job_data *job_data = ecr_job_data_new(strndup(content, strlen(content)), is_command, lang);
+  ecr_job_data *job_data = ecr_job_data_new(ecr_strdup(content), is_command, lang);
   return job_data;
 }

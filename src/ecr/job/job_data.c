@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include "job_data.h"
+#include "../base/base.h"
 
 /**
  * @brief  Destroys a job_data instance
@@ -16,7 +17,7 @@ ecr_job_data* ecr_job_data_new(const char* content, bool is_command, language la
   assert(content);
   ecr_job_data *job_data = (ecr_job_data*)malloc(sizeof(ecr_job_data));
   assert(job_data);
-  job_data->content = strndup(content, strlen(content));
+  job_data->content = ecr_strdup(content);
   job_data->is_command = is_command;
   job_data->lang = lang;
   return job_data;
@@ -49,7 +50,7 @@ ecr_job_data* ecr_job_data_parse(char *job_data_str) {
   char *content = cJSON_GetObjectItemCaseSensitive(job_data_json, "content")->valuestring;
 
   ecr_job_data *job_data = ecr_job_data_new(
-            strndup(content, strlen(content)),
+            ecr_strdup(content),
             (bool)(cJSON_GetObjectItemCaseSensitive(job_data_json, "is_command")->valueint),
             (language)(cJSON_GetObjectItemCaseSensitive(job_data_json, "lang")->valueint)
   );
@@ -68,7 +69,7 @@ cJSON* ecr_job_data_tojson(ecr_job_data *job_data) {
   cJSON *job_data_json = cJSON_CreateObject();
   assert(job_data_json);
 
-  cJSON *content = cJSON_CreateString(strndup(job_data->content, strlen(job_data->content)));
+  cJSON *content = cJSON_CreateString(ecr_strdup(job_data->content));
   cJSON *is_command = cJSON_CreateBool(job_data->is_command);
   cJSON *lang = cJSON_CreateNumber((int)job_data->lang);
 
@@ -86,8 +87,7 @@ cJSON* ecr_job_data_tojson(ecr_job_data *job_data) {
  */
 char* ecr_job_data_tostring(ecr_job_data *job_data) {
   cJSON *json = ecr_job_data_tojson(job_data);
-  char *dump = cJSON_Print(json);
-  char *as_string = strndup(dump, strlen(dump));
+  char *as_string = ecr_strdup(cJSON_Print(json));
   free(json);
   return as_string;
 }
