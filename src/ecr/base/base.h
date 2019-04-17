@@ -3,6 +3,6 @@
 
 #include "version.h"
 #include <czmq.h>
-#include "../../redis/redis_client.h"
+#include "../../redis/redis_client.c"
 
 #endif //__ECR_BASE__
