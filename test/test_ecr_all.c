@@ -9,7 +9,6 @@
 #include "../src/ecr/status/status.h"
 #include "../src/ecr/job/job.h"
 #include "../src/ecr/job/job_data.h"
-#include "../src/redis/redis_client.h"
 
 #include "../src/cJSON/cJSON.c"
 #include "../src/ecr/status/status.c"
