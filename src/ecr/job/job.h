@@ -12,7 +12,7 @@ typedef struct _ecr_job {
   ecr_job_data *data;
 } ecr_job;
 
-ecr_job* ecr_job_new();
+ecr_job* ecr_job_new(const char *id, const char *description, ecr_job_data *job_data);
 void ecr_job_destroy(ecr_job **job);
 ecr_job* ecr_job_parse(char *job_str);
 cJSON* ecr_job_tojson(ecr_job *job);

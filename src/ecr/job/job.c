@@ -6,17 +6,20 @@
 #include "job.h"
 
 /**
- * @brief  Creates a new job instance
+ * @brief  Creates a job instance
  * @note   
+ * @param  *id: job id
+ * @param  *description: job bescription 
+ * @param  *job_data: Pointer to job data
  * @retval Pointer to job instance
  */
-ecr_job* ecr_job_new() {
+ecr_job* ecr_job_new(const char *id, const char *description, ecr_job_data *job_data) {
   ecr_job *job = (ecr_job*)malloc(sizeof(ecr_job));
   assert(job);
 
-  job->id = "";
-  job->description = "";
-  job->data = (ecr_job_data*)malloc(sizeof(ecr_job_data));
+  job->id = strdup(id);
+  job->description = strdup(description);
+  job->data = job_data;
 
   return job;
 }
@@ -30,6 +33,7 @@ void ecr_job_destroy(ecr_job **job) {
   assert(job);
   if (*job) {
     ecr_job *self = *job;
+    ecr_job_data_destroy(&self->data);
     free (self);
     *job = NULL;
   }
@@ -45,20 +49,20 @@ ecr_job* ecr_job_parse(char *job_str) {
   cJSON *job_json = cJSON_Parse(job_str);
   assert(job_json);
 
-  ecr_job *job = ecr_job_new();
-  job->id = strdup(cJSON_GetObjectItemCaseSensitive(job_json, "id")->valuestring);
-  job->description = strdup(cJSON_GetObjectItemCaseSensitive(job_json, "description")->valuestring);
-  // job->data = strdup(cJSON_GetObjectItemCaseSensitive(json, "data")->valuestring);
+  char *id = strdup(cJSON_GetObjectItemCaseSensitive(job_json, "id")->valuestring);
+  char *description = strdup(cJSON_GetObjectItemCaseSensitive(job_json, "description")->valuestring);
 
-  cJSON *job_data = cJSON_GetObjectItem(job_json, "data");
+  cJSON *job_data_json = cJSON_GetObjectItem(job_json, "data");
 
-  job->data->content = strdup(cJSON_GetObjectItemCaseSensitive(job_data, "content")->valuestring);
-  job->data->is_command = (bool)(cJSON_GetObjectItemCaseSensitive(job_data, "is_command")->valueint);
-  job->data->lang = (language)(cJSON_GetObjectItemCaseSensitive(job_data, "lang")->valueint);
+  ecr_job_data *job_data = ecr_job_data_new(strdup(cJSON_GetObjectItemCaseSensitive(job_data_json, "content")->valuestring),
+                          (bool)(cJSON_GetObjectItemCaseSensitive(job_data_json, "is_command")->valueint),
+                          (language)(cJSON_GetObjectItemCaseSensitive(job_data_json, "lang")->valueint)
+  );
+
+  ecr_job *job = ecr_job_new(id, description, job_data);
   
-
   cJSON_Delete(job_json);
-  cJSON_Delete(job_data);
+  cJSON_Delete(job_data_json);
   return job;
 }
 /**

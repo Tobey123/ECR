@@ -17,7 +17,7 @@ status_info* prv_disconnect();
 status_info* prv_store_job(ecr_job *job);
 ecr_job* prv_retrieve_job(char *key);
 status_info* prv_remove_job(char *key);
-ecr_job* prv_create_job(char *id, char *description, ecr_job_data *data, bool is_command);
+ecr_job* prv_create_job(char *id, char *description, ecr_job_data *data);
 ecr_job_data* prv_create_job_data(char *content, bool is_command, language lang);
 
 /**
@@ -126,7 +126,6 @@ status_info* prv_store_job(ecr_job *job) {
 ecr_job* prv_retrieve_job(char *key) {
   assert(ctx);
   assert(key);
-  ecr_job *job = ecr_job_new();
 
   redisReply *reply = redisCommand(ctx, "GET %s:%s", ECR_REDIS_JOB_PREFIX, key);
   assert(reply);
@@ -134,14 +133,17 @@ ecr_job* prv_retrieve_job(char *key) {
   cJSON *job_json = cJSON_Parse(reply->str);
   assert(job_json);
 
-  job->id = strdup(cJSON_GetObjectItemCaseSensitive(job_json, "id")->valuestring);
-  job->description = strdup(cJSON_GetObjectItemCaseSensitive(job_json, "description")->valuestring);
+  char *id = strdup(cJSON_GetObjectItemCaseSensitive(job_json, "id")->valuestring);
+  char *description = strdup(cJSON_GetObjectItemCaseSensitive(job_json, "description")->valuestring);
 
-  cJSON *job_data = cJSON_GetObjectItem(job_json, "data");
+  cJSON *job_data_json = cJSON_GetObjectItem(job_json, "data");
 
-  job->data->content = strdup(cJSON_GetObjectItemCaseSensitive(job_data, "content")->valuestring);
-  job->data->is_command = cJSON_GetObjectItemCaseSensitive(job_data, "is_command")->valueint;
-  job->data->lang = (language)cJSON_GetObjectItemCaseSensitive(job_data, "lang")->valueint;
+  ecr_job_data *job_data = ecr_job_data_new(strdup(cJSON_GetObjectItemCaseSensitive(job_data_json, "content")->valuestring),
+                   (bool)cJSON_GetObjectItemCaseSensitive(job_data_json, "is_command")->valueint,
+                   (language)cJSON_GetObjectItemCaseSensitive(job_data_json, "lang")->valueint
+  );
+
+  ecr_job *job = ecr_job_new(id, description, job_data);
 
 
   freeReplyObject(reply);
@@ -173,29 +175,29 @@ status_info* prv_remove_job(char *key) {
  * @note   
  * @param  *id: job id
  * @param  *description: job description 
- * @param  *data: a single command or source code
- * @param  is_command: does this job carry source code
+ * @param  *data: Pointer to job_data instance
  * @retval reference to job instance
  */
-ecr_job* prv_create_job(char *id, char *description, ecr_job_data *data, bool is_command) {
+ecr_job* prv_create_job(char *id, char *description, ecr_job_data *data) {
   assert(id);
   assert(description);
   assert(data);
-  ecr_job *job = ecr_job_new();
-  assert(job);
-
-  job->id = strdup(id);
-  job->description = strdup(description);
-  job->data = data;
-
+  ecr_job *job = ecr_job_new(strdup(id),
+                            strdup(description),
+                            data
+  );
   return job;
 }
-
+/**
+ * @brief  Create job_data instance
+ * @note   
+ * @param  *content: String content of command or script
+ * @param  is_command: Is the content a command
+ * @param  lang: Language used to parse script or command
+ * @retval 
+ */
 ecr_job_data* prv_create_job_data(char *content, bool is_command, language lang) {
   assert(content);
-  ecr_job_data *job_data = ecr_job_data_new();
-  job_data->content = strdup(content);
-  job_data->is_command = is_command;
-  job_data->lang = lang;
+  ecr_job_data *job_data = ecr_job_data_new(strdup(content), is_command, lang);
   return job_data;
 }

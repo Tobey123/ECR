@@ -6,16 +6,20 @@
 #include "job_data.h"
 
 /**
- * @brief  Creates a new job_data instance
+ * @brief  Destroys a job_data instance
  * @note   
- * @retval Pointer to job_data instance
+ * @param  *content: script or command string
+ * @param  is_command: type of content
+ * @param  language: programming language used to execute script or command
+ * @retval None
  */
-ecr_job_data* ecr_job_data_new() {
+ecr_job_data* ecr_job_data_new(const char* content, bool is_command, language lang) {
+  assert(content);
   ecr_job_data *job_data = (ecr_job_data*)malloc(sizeof(ecr_job_data));
   assert(job_data);
-  job_data->content = "";
-  job_data->is_command = true;
-  job_data->lang = LANG_UNKNOWN;
+  job_data->content = strdup(content);
+  job_data->is_command = is_command;
+  job_data->lang = lang;
   return job_data;
 }
 /**
@@ -43,10 +47,11 @@ ecr_job_data* ecr_job_data_parse(char *job_data_str) {
   cJSON *job_data_json = cJSON_Parse(job_data_str);
   assert(job_data_json);
 
-  ecr_job_data *job_data = ecr_job_data_new();
-  job_data->content = strdup(cJSON_GetObjectItemCaseSensitive(job_data_json, "content")->valuestring);
-  job_data->is_command = (bool)(cJSON_GetObjectItemCaseSensitive(job_data_json, "is_command")->valueint);
-  job_data->lang = (language)(cJSON_GetObjectItemCaseSensitive(job_data_json, "lang")->valueint);
+  ecr_job_data *job_data = ecr_job_data_new(
+            strdup(cJSON_GetObjectItemCaseSensitive(job_data_json, "content")->valuestring),
+            (bool)(cJSON_GetObjectItemCaseSensitive(job_data_json, "is_command")->valueint),
+            (language)(cJSON_GetObjectItemCaseSensitive(job_data_json, "lang")->valueint)
+  );
 
   cJSON_Delete(job_data_json);
   return job_data;
