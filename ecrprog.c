@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
       ecr_job *job = client->retrieve_job("123");
       assert(job);
       printf("Retrieved Job: %s\n", job->description);
-      client->remove_job(strdup(job->id));
+      client->remove_job(_strdup(job->id));
       ecr_job_destroy(&job);
     }
     status_info_destroy(&status);
