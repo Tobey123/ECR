@@ -130,7 +130,7 @@ Test(remove_job, passing, .init = setup_redis, .fini = teardown_redis) {
     ecr_job *job = client->create_job("123", "description", job_data);
     status_info *job_status = client->store_job(job);
     cr_assert_eq(job_status->code, REDIS_STATUS_SUCCESS);
-    status_info *removal_status = client->remove_job(strdup(job->id));
+    status_info *removal_status = client->remove_job(_strdup(job->id));
     cr_assert_eq(removal_status->code, REDIS_STATUS_SUCCESS);
     status_info_destroy(&job_status);
     ecr_job_destroy(&job);
@@ -141,7 +141,7 @@ Test(store_job, passing, .init = setup_redis, .fini = teardown_redis) {
     ecr_job *job = client->create_job("123", "description", job_data);
     status_info *job_status = client->store_job(job);
     cr_assert_eq(job_status->code, REDIS_STATUS_SUCCESS);
-    client->remove_job(strdup(job->id));
+    client->remove_job(_strdup(job->id));
     status_info_destroy(&job_status);
     ecr_job_destroy(&job);
 }
