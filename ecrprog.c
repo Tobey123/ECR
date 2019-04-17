@@ -9,6 +9,7 @@
 
 
 #include "src/ecr/base/base.h"
+#include "src/redis/redis_client.h"
 /**
  * @brief  Test program to show the capabilities of ECR
  * @note   
@@ -32,7 +33,7 @@ int main(int argc, char **argv) {
       ecr_job *job = client->retrieve_job("123");
       assert(job);
       printf("Retrieved Job: %s\n", job->description);
-      client->remove_job(strndup(job->id, strlen(job->id)));
+      client->remove_job(ecr_strdup(job->id));
       ecr_job_destroy(&job);
     }
     status_info_destroy(&status);
