@@ -2,7 +2,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
-#include "../base/helpers.c"
 #include "job.h"
 
 /**
@@ -17,8 +16,8 @@ ecr_job* ecr_job_new(const char *id, const char *description, ecr_job_data *job_
   ecr_job *job = (ecr_job*)malloc(sizeof(ecr_job));
   assert(job);
 
-  job->id = _strdup(id);
-  job->description = _strdup(description);
+  job->id = strndup(id, strlen(id));
+  job->description = strndup(description, strlen(description));
   job->data = job_data;
 
   return job;
@@ -49,12 +48,18 @@ ecr_job* ecr_job_parse(char *job_str) {
   cJSON *job_json = cJSON_Parse(job_str);
   assert(job_json);
 
-  char *id = _strdup(cJSON_GetObjectItemCaseSensitive(job_json, "id")->valuestring);
-  char *description = _strdup(cJSON_GetObjectItemCaseSensitive(job_json, "description")->valuestring);
+  char *_id = cJSON_GetObjectItemCaseSensitive(job_json, "id")->valuestring;
+  char *_description = cJSON_GetObjectItemCaseSensitive(job_json, "description")->valuestring;
+  
+  char *id = strndup(_id, strlen(_id));
+  char *description = strndup(_description, strlen(_description));
 
   cJSON *job_data_json = cJSON_GetObjectItem(job_json, "data");
 
-  ecr_job_data *job_data = ecr_job_data_new(_strdup(cJSON_GetObjectItemCaseSensitive(job_data_json, "content")->valuestring),
+  char *_content = cJSON_GetObjectItemCaseSensitive(job_data_json, "content")->valuestring;
+  char *content = strndup(_content, strlen(_content));
+
+  ecr_job_data *job_data = ecr_job_data_new(content,
                           (bool)(cJSON_GetObjectItemCaseSensitive(job_data_json, "is_command")->valueint),
                           (language)(cJSON_GetObjectItemCaseSensitive(job_data_json, "lang")->valueint)
   );
@@ -76,8 +81,8 @@ cJSON* ecr_job_tojson(ecr_job *job) {
   cJSON *json = cJSON_CreateObject();
   assert(json);
 
-  cJSON *id = cJSON_CreateString(_strdup(job->id));
-  cJSON *description = cJSON_CreateString(_strdup(job->description));
+  cJSON *id = cJSON_CreateString(strndup(job->id, strlen(job->id)));
+  cJSON *description = cJSON_CreateString(strndup(job->description, strlen(job->description)));
 
   cJSON *job_data = ecr_job_data_tojson(job->data);
 
@@ -95,7 +100,8 @@ cJSON* ecr_job_tojson(ecr_job *job) {
  */
 char* ecr_job_tostring(ecr_job *job) {
   cJSON *json = ecr_job_tojson(job);
-  char *as_string = _strdup(cJSON_Print(json));
+  char *dump = cJSON_Print(json);
+  char *as_string = strndup(dump, strlen(dump));
   free(json);
   return as_string;
 }
