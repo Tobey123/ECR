@@ -21,20 +21,6 @@ static ecr_job* prv_create_job(char *id, char *description, ecr_job_data *data);
 static ecr_job_data* prv_create_job_data(char *content, bool is_command, language lang);
 
 /**
- * @brief  Destroys a redis client
- * @note   
- * @param  **client: 
- * @retval None
- */
-void redis_client_destroy(redis_client **client) {
-  assert(client);
-  if (*client) {
-    redis_client *self = *client;
-    free (self);
-    *client = NULL;
-  }
-}
-/**
  * @brief  Opens a connection to a redis instance
  * @note   
  * @param  *hostname: Server where redis is running

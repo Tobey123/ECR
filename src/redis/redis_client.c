@@ -16,3 +16,18 @@ redis_client* redis_client_new() {
   client->store_job = prv_store_job;
   return client;
 }
+
+/**
+ * @brief  Destroys a redis client
+ * @note   
+ * @param  **client: 
+ * @retval None
+ */
+void redis_client_destroy(redis_client **client) {
+  assert(client);
+  if (*client) {
+    redis_client *self = *client;
+    free (self);
+    *client = NULL;
+  }
+}
