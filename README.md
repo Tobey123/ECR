@@ -1,6 +1,6 @@
 # ECR
 
-*Execute*, *Collect*, and *Report* -  a tool for remote code execution and reporting
+*Execute*, *Collect*, and *Report* -  a tool set for remote code execution, data collection and reporting
 
 ### Work in Progress
 
