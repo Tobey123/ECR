@@ -4,8 +4,6 @@
 #include "../src/ecr/ecr.h"
 #include "../src/ecr/ecr.c"
 
-#define ECR_DEBUG
-
 /*
 * Testing status
 */
