@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
+#include <stdbool.h>
 
 #if defined(_MSC_VER)
 #pragma warning (pop)
