@@ -1,20 +1,10 @@
 #include <criterion/criterion.h>
 #include <criterion/logging.h>
 
-#undef true
-#undef false
-#include <stdbool.h>
+#include "../src/ecr/ecr.h"
+#include "../src/ecr/ecr.c"
 
-#include "../src/cJSON/cJSON.h"
-#include "../src/ecr/status/status.h"
-#include "../src/ecr/job/job.h"
-#include "../src/ecr/job/job_data.h"
-
-#include "../src/cJSON/cJSON.c"
-#include "../src/ecr/status/status.c"
-#include "../src/ecr/job/job_data.c"
-#include "../src/ecr/job/job.c"
-#include "../src/redis/redis_client.c"
+#define ECR_DEBUG
 
 /*
 * Testing status
