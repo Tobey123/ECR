@@ -45,10 +45,10 @@ status_info* prv_connect(char *hostname, int port, bool is_unix) {
         if (ctx) {
             redisFree(ctx);
             status->code = REDIS_STATUS_SUCCESS;
-            sprintf(status->message, "Connection error: %s\n", ctx->errstr);
+            snprintf(status->message, strlen(ctx->errstr), "Connection error: %s\n", ctx->errstr);
         } else {
             status->code = REDIS_STATUS_SUCCESS;
-            sprintf(status->message, "Connection error: can't allocate redis context\n");
+            snprintf(status->message, strlen(ctx->errstr), "Connection error: can't allocate redis context\n");
         }
         return status;
     }
