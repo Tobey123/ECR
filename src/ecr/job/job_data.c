@@ -88,6 +88,6 @@ cJSON* ecr_job_data_tojson(ecr_job_data *job_data) {
 char* ecr_job_data_tostring(ecr_job_data *job_data) {
   cJSON *json = ecr_job_data_tojson(job_data);
   char *as_string = ecr_strdup(cJSON_Print(json));
-  free(json);
+  cJSON_Delete(json);
   return as_string;
 }

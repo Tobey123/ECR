@@ -16,11 +16,9 @@
 ecr_job* ecr_job_new(const char *id, const char *description, ecr_job_data *job_data) {
   ecr_job *job = (ecr_job*)malloc(sizeof(ecr_job));
   assert(job);
-
   job->id = ecr_strdup(id);
   job->description = ecr_strdup(description);
   job->data = job_data;
-
   return job;
 }
 /**
@@ -34,7 +32,7 @@ void ecr_job_destroy(ecr_job **job) {
   if (*job) {
     ecr_job *self = *job;
     ecr_job_data_destroy(&self->data);
-    free (self);
+    free(self);
     *job = NULL;
   }
 }
@@ -62,7 +60,6 @@ ecr_job* ecr_job_parse(char *job_str) {
   );
   
   cJSON_Delete(job_json);
-  cJSON_Delete(job_data_json);
   return job;
 }
 /**
@@ -93,6 +90,6 @@ cJSON* ecr_job_tojson(ecr_job *job) {
 char* ecr_job_tostring(ecr_job *job) {
   cJSON *json = ecr_job_tojson(job);
   char *as_string = ecr_strdup(cJSON_Print(json));
-  free(json);
+  cJSON_Delete(json);
   return as_string;
 }

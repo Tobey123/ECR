@@ -1,6 +1,9 @@
 #ifndef __ECR_ECR__
 #define __ECR_ECR__
 
+#define ECR_DEBUG
+#include "debug/debug.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

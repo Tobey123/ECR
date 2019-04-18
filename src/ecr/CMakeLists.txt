@@ -9,6 +9,7 @@ include_directories(compat)
 include_directories(job)
 include_directories(status)
 include_directories(redis)
+include_directories(debug)
 file(GLOB SOURCES "*.c")
 
 find_package(hiredis REQUIRED)
