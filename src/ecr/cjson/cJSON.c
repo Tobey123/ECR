@@ -37,6 +37,7 @@
 #pragma warning (disable : 4001)
 #endif
 
+#include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
 #include <math.h>

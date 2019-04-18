@@ -7,9 +7,8 @@
  * @Description: Execute Collect Report -  A tool for remote code execution
  */
 
+#include "src/ecr/ecr.h"
 
-#include "src/ecr/base/base.h"
-#include "src/redis/redis_client.h"
 /**
  * @brief  Test program to show the capabilities of ECR
  * @note   
@@ -42,5 +41,6 @@ int main(int argc, char **argv) {
   }
   status_info_destroy(&redis_info);
   client->disconnect();
+  redis_client_destroy(&client);
   return 0;
 }

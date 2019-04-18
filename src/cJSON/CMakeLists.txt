@@ -1,5 +1,0 @@
-cmake_minimum_required(VERSION 3.9.1)
-project(libcjson)
-set(LIBRARY_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/lib)
-file(GLOB SOURCES "*.c")
-add_library(cjson STATIC ${SOURCES})
