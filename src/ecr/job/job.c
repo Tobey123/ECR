@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include "job.h"
-#include "../base/base.h"
+#include "../compat/compat.h"
 
 /**
  * @brief  Creates a job instance

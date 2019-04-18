@@ -1,7 +1,8 @@
 #ifndef __ECR_JOB_DATA__
 #define __ECR_JOB_DATA__
 
-#include "../../cJSON/cJSON.h"
+#include <stdbool.h>
+#include "../cjson/cJSON.h"
 
 enum language_enum {
   MSDOS,

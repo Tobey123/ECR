@@ -1,7 +1,7 @@
 #ifndef __ECR_JOB__
 #define __ECR_JOB__
 
-#include "../../cJSON/cJSON.h"
+#include "../cjson/cJSON.h"
 #include "job_data.h"
 
 #define ECR_REDIS_JOB_PREFIX "ecr:job"

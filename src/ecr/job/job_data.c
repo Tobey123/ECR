@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include "job_data.h"
-#include "../base/base.h"
+#include "../compat/compat.h"
 
 /**
  * @brief  Destroys a job_data instance

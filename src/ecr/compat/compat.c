@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static char *ecr_strdup(const char *str);
-
 /**
  * @brief  Duplicate string
  * @note   
