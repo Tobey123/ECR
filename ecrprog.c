@@ -9,6 +9,7 @@
 
 #include "src/ecr/ecr.h"
 
+
 /**
  * @brief  Test program to show the capabilities of ECR
  * @note   
@@ -31,7 +32,7 @@ int main(int argc, char **argv) {
     if (status->code == REDIS_STATUS_SUCCESS) {
       ecr_job *job = client->retrieve_job("123");
       assert(job);
-      printf("Retrieved Job: %s\n", job->description);
+      printf("DEBUG | RETRIEVED JOB: %s\n", job->description);
       client->remove_job(ecr_strdup(job->id));
       ecr_job_destroy(&job);
     }
@@ -42,5 +43,6 @@ int main(int argc, char **argv) {
   status_info_destroy(&redis_info);
   client->disconnect();
   redis_client_destroy(&client);
+  printf("Allocations left: %ld\n", ecr_debug_get_allocation_counter());
   return 0;
 }
